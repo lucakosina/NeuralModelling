@@ -425,31 +425,38 @@ def BIC(data, log_likelihood, k):
     BIC = k*np.log(len(data)) - 2*-log_likelihood(data)
     return BIC
 
+model_params = {}
 
-for j, learner in enumerate([model_1]):
+for i in range(1, 8):
+    learner_name = f"model_{i}"  # Dynamically create the model name
+    learner = globals()[learner_name] 
 
-    for i, subject in enumerate(np.unique(df.ID)):
-        subject_data = df[df[subject]] # subset data to one subject
-        subject_data = subject_data.reset_index(drop=True)  # not resetting the index can lead to issues
+    for j, learner in enumerate([learner]):
 
-        if j == 0:
+        for k, subject in enumerate(np.unique(df.ID)):
+            subject_data = df[df[subject]] # subset data to one subject
+            subject_data = subject_data.reset_index(drop=True)  # not resetting the index can lead to issues
 
-            # define yourself a loss for the current model
-            def loss(params):
-                return -learner(subject_data, *params).sum()
-            
-            # optimize the above models with initial guessed for parameters and bounds of parameters
-            initial_params = [0.5, 0.5, 0.5]
-            bounds = [(0, 1), (0, None), (0, 10)]
+            if j == 0:
 
-            res = minimize(loss, initial_params, bounds, method=method)
+                # define yourself a loss for the current model
+                def loss(params):
+                    return -learner(subject_data, *params).sum()
+                
+                # optimize the above models with initial guessed for parameters and bounds of parameters
+                initial_params = [0.5, 0.5, 0.5]
+                bounds = [(0, 1), (0, None), (0, 10)]
 
-            # save the optimized log-likelihhod
-            log_likelihood = -res.fun
+                res = minimize(loss, initial_params, bounds, method=method)
 
-            # save the fitted parameters
-            params = res.x
-            print(params)
+                # save the optimized log-likelihhod
+                log_likelihood = -res.fun
+
+                # save the fitted parameters
+                params = res.x
+                print(params)
+
+                model_params[(i, k)] = params
 
     # compute BIC
     bic = BIC(subject_data, log_likelihood, len(params))
@@ -462,7 +469,8 @@ for j, learner in enumerate([model_1]):
 
 # %%
 # plot learning rates of the last model
-plt.plot(params)
+models = ['model_1', 'model_2', 'model_3', 'model_4', 'model_5', 'model_6', 'model_7']
+plt.plot(models, model_params.values())
 plt.show()
 
 
