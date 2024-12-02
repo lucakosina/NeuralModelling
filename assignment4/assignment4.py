@@ -300,12 +300,14 @@ def model_6(data, learning_rate, p_rew, p_pun, bias_rew, bias_pun):
     w['cue'][0] = 0
 
     for i in range(len(data)):
+        """
         if (data['cue'][i] == 1 & data['outcome'][i] > 1) | (data['cue'][i] == 2 & data['outcome'][i] == 0) | (data['cue'][i] == 3 & data['outcome'][i] > 1) | (data['cue'][i] == 4 & data['outcome'][i] == 0):
             bias = bias_rew
             beta = p_rew
         else:
             bias = bias_pun
             beta = p_pun
+            """
 
 
         #if reward == 0:
