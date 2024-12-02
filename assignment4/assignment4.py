@@ -230,9 +230,9 @@ def model_4(data, learning_rate, beta, bias_rew, bias_pun):
         #else:
             #bias = bias_pun
 
-        if cue == 0:
+        if data['cue'] == 0:
             bias = bias_rew
-        elif cue == 1:
+        elif data['cue'] == 1:
             bias = bias_pun
 
         # Explicitly use iloc for consistent indexing
@@ -289,7 +289,7 @@ def model_5(data, learning_rate, p_rew, p_pun, bias_rew, bias_pun):
 
     return log_likelihood
 
-def model_6(data, learning_rate, p_rew, p_pun, bias_rew, bias_pun):
+def model_6(data, learning_rate, p_app_rew, p_app_pun, p_wth_rew, p_wth_pun, bias_rew, bias_pun):
     # run a q-learning model on the data, return the log-likelihood
     # parameters are learning rate and beta, the feedback sensitivity
     q = pd.DataFrame(0, index=np.arange(len(data)), columns=cue_mapping.values())
@@ -310,10 +310,21 @@ def model_6(data, learning_rate, p_rew, p_pun, bias_rew, bias_pun):
             """
 
 
-        #if reward == 0:
-            #return 0
-        #elif reward == 1 & action == 0:
+        if data['reward'] == 0:
+            beta = 0
+        elif data['reward'] == 1 & data['action'] == 1:
+            beta = p_app_rew
+        elif data['reward'] == -1 & data['action'] == 1:
+            beta = p_app_pun
+        elif data['reward'] == 1 & data['action'] == 0:
+            beta = p_wth_rew
+        elif data['reward'] == -1 & data['action'] == 0:
+            beta = p_wth_pun
 
+        if cue == 0:
+            bias = bias_rew
+        elif cue == 1:
+            bias = bias_pun
         
 
         # Explicitly use iloc for consistent indexing
